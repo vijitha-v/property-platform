@@ -1,0 +1,81 @@
+{
+  "info": {
+    "name": "Property Platform API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://wpmnode.appzilla.co"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/health"
+      }
+    },
+    {
+      "name": "Create Enquiry",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/enquiry",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"1234567890\",\"message\":\"I am interested in this property\",\"property_id\":\"PROP001\"}"
+        }
+      }
+    },
+    {
+      "name": "Get Enquiry by ID",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/enquiry/:id"
+      }
+    },
+    {
+      "name": "List Enquiries",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/enquiries?page=1&limit=10"
+      }
+    },
+    {
+      "name": "CRM Webhook",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/webhook/crm",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "x-webhook-signature", "value": "your_hmac_signature_here"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"event\":\"enquiry.updated\",\"enquiry_id\":\"your-id-here\",\"status\":\"contacted\"}"
+        }
+      }
+    },
+    {
+      "name": "Get WP Properties",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/wp/properties"
+      }
+    },
+    {
+      "name": "Invalidate WP Cache",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/api/wp/cache/invalidate",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    }
+  ]
+}
