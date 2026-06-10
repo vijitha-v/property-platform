@@ -60,32 +60,31 @@ export const list = async (req: Request, res: Response) => {
     const offset = (page - 1) * limit;
     const status = req.query.status as string;
 
-    // Single optimised query with COUNT using window function (avoids second query)
-    const query = status
-      ? `SELECT *, COUNT(*) OVER() as total_count 
-         FROM enquiries 
-         WHERE status = $3
-         ORDER BY created_at DESC 
-         LIMIT $1 OFFSET $2`
-      : `SELECT *, COUNT(*) OVER() as total_count 
-         FROM enquiries 
-         ORDER BY created_at DESC 
-         LIMIT $1 OFFSET $2`;
+    let query: string;
+    let params: any[];
 
-    const params = status ? [limit, offset, status] : [limit, offset];
+    if (status) {
+      query = `SELECT *, COUNT(*) OVER() as total_count 
+               FROM enquiries 
+               WHERE status = $1
+               ORDER BY created_at DESC 
+               LIMIT $2 OFFSET $3`;
+      params = [status, limit, offset];
+    } else {
+      query = `SELECT *, COUNT(*) OVER() as total_count 
+               FROM enquiries 
+               ORDER BY created_at DESC 
+               LIMIT $1 OFFSET $2`;
+      params = [limit, offset];
+    }
+
     const result = await db.query(query, params);
-
     const total = result.rows.length > 0 ? Number(result.rows[0].total_count) : 0;
 
     res.json({
       success: true,
       data: result.rows.map(({ total_count, ...row }) => row),
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit)
-      }
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) }
     });
 
   } catch (error) {
