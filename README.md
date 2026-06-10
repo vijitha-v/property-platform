@@ -106,4 +106,7 @@ src/
 ├── queues/          # BullMQ workers
 ├── routes/          # API routes
 └── services/        # WordPress service
+
+> Note: WordPress/WPGraphQL integration tested locally on http://localhost:8080. 
+> WPGraphQL endpoint: http://localhost:8080/graphql
 ```
