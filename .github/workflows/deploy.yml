@@ -1,0 +1,38 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: 164.52.193.53
+          username: appzilla-wpmnode
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 2222
+          script: |
+            cd ~/property-platform
+            git pull origin main
+            npm install --legacy-peer-deps
+            npm run build
+            pm2 restart property-api --update-env
